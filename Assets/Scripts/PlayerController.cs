@@ -67,7 +67,9 @@ public class PlayerController : MonoBehaviour
             //transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X"), 0));
             targetRotation *= Quaternion.AngleAxis(Input.GetAxis("Mouse X"), Vector3.up);
         }
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 30f);
+
+        if(!Input.GetKey(KeyCode.LeftAlt))
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 30f);
     }
 
     private void CheckGround()
