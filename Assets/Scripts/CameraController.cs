@@ -126,13 +126,13 @@ public class CameraController : MonoBehaviour
             }
 
             //RaycastHit[] boomStartHits = Physics.SphereCastAll(transform.position + cameraBoomStart.transform.position, 0.1f, cameraBoomStart.transform.right, 0.1f);
-  
+
             //if(boomStartHits.Length > 0)
             //{
             //    Vector3 normal = Vector3.zero;
             //    foreach (RaycastHit hit in boomStartHits)
             //    {
-                    
+
             //        Debug.Log(hit.transform.name);
             //        cameraBoomStart.transform.position = hit.point + hit.normal * 0.1f;
             //        break;
@@ -147,10 +147,10 @@ public class CameraController : MonoBehaviour
             ////}
             //else
             //{
-                
+
             //}
 
-
+            //wwwwwwDebug.Log(targetPosCamBoomStart);
             targetPosCamBoomStart = new Vector3(
                 cameraDistance < centerCameraDistance ? Mathf.Pow(Mathf.Cos((Mathf.PI / ((centerCameraDistance - 1) * 2)) * cameraDistance - (Mathf.PI / ((centerCameraDistance - 1) * 2))), centerCameraArcFactor) * -originMoveTo.x : 0,
                 targetPosCamBoomStart.y,
@@ -160,7 +160,16 @@ public class CameraController : MonoBehaviour
             Vector3 currentVelocity = Vector3.zero;
             cameraBoomStart.transform.localPosition = Vector3.SmoothDamp(cameraBoomStart.transform.localPosition, targetPosCamBoomStart, ref currentVelocity, lerpSpeed);
 
+            RaycastHit camBoomStartHit;
+            if (Physics.SphereCast(cameraBoomStart.transform.position, 0.2f, Vector3.right, out camBoomStartHit, 0.2f))
+            {
+                Debug.Log(camBoomStartHit.point);
+                cameraBoomStart.transform.localPosition += camBoomStartHit.normal - (cameraBoomStart.transform.position - camBoomStartHit.point);
+            }
+            else
+            {
 
+            }
 
             if (objectToFollow)
             {
@@ -190,7 +199,6 @@ public class CameraController : MonoBehaviour
                 {
                     if (!cameraBoomIgnoreTags.Contains(hit.transform.tag))
                     {
-                        Debug.Log(hit.transform.name);
                         float dist = ((hit.point + hit.normal * 0.01f) - startpoint).magnitude;
                         if(dist < closestValue)
                         {
@@ -238,13 +246,15 @@ public class CameraController : MonoBehaviour
 
             cameraDistance = Mathf.Lerp(cameraDistance, targetCameraDistance, lerpSpeed);
 
+
+            
+
             cameraBoomEnd.transform.localPosition = new Vector3(
                 0,
                 cameraDistance < 3 ? (Mathf.Sin(cameraDistance * 0.5f) * Mathf.Pow(cameraDistance, 3)) / 111.5f : cameraDistance * 0.25f - 0.5085f,
                 -cameraDistance
                 );
 
-            
         }
     }
 
@@ -253,5 +263,12 @@ public class CameraController : MonoBehaviour
         centerCameraDistance = centerCameraDistance <= minDistance ? minDistance + Mathf.Epsilon : centerCameraDistance;
     }
 
-    
+
+    private void OnDrawGizmos()
+    {
+        // Draw a yellow sphere at the transform's position
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(cameraBoomStart.transform.position, 0.1f);
+        //Gizmos.DrawSphere(transform.position + transform.right * targetPosCamBoomStart.x + transform.up * targetPosCamBoomStart.y + transform.forward * targetPosCamBoomStart.z , 0.1f);
+    }
 }
